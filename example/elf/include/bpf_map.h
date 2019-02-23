@@ -1,5 +1,8 @@
 #define BUF_SIZE_MAP_NS 256
 
+/* 
+ * a helper structure used by eBPF C program to describe map attributes to elf_bpf loader
+ */
 typedef struct bpf_map_def {
 	unsigned int type;
 	unsigned int key_size;
