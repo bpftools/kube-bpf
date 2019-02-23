@@ -1,0 +1,74 @@
+package mapcollector
+
+import (
+	"fmt"
+	"log"
+	"unsafe"
+
+	"github.com/leodido/bpf-operator/loader"
+	"github.com/prometheus/client_golang/prometheus"
+)
+
+func New(path string) *MapCollector {
+	return &MapCollector{
+		path: path,
+	}
+}
+
+type MapCollector struct {
+	path         string
+	str          *loader.Loader
+	descriptions map[string]*prometheus.Desc
+}
+
+func (c *MapCollector) Setup() error {
+	str, err := loader.NewLoader("example/dummy.o")
+	if err != nil {
+		return err
+	}
+	c.str = str
+	c.descriptions = make(map[string]*prometheus.Desc, 0)
+	return nil
+}
+
+func (c *MapCollector) Describe(ch chan<- *prometheus.Desc) {
+	// Handling only type 1 for now // BPF_MAP_TYPE_HASH
+	for _, mapname := range c.str.MapsMeta()[1] {
+		log.Printf("Map: %q.\n", mapname)
+		desc := prometheus.NewDesc(
+			prometheus.BuildFQName("test", "", mapname),
+			fmt.Sprintf("Data coming from %s BPF map", mapname),
+			[]string{"key"},
+			nil,
+		)
+		c.descriptions[mapname] = desc
+		ch <- desc
+	}
+}
+
+func (c *MapCollector) Collect(ch chan<- prometheus.Metric) {
+	module := c.str.Module()
+	// Handling only type 1 for now // BPF_MAP_TYPE_HASH
+	for _, mapname := range c.str.MapsMeta()[1] {
+		m := module.Map(mapname)
+		// key, next key, and value
+		var k, n, v uint64
+		var err error
+		still := true
+		// continue until there are other values
+		for still {
+			still, err = module.LookupNextElement(m, unsafe.Pointer(&k), unsafe.Pointer(&n), unsafe.Pointer(&v))
+			if err != nil {
+				break
+			}
+			k = n
+
+			ch <- prometheus.MustNewConstMetric(
+				c.descriptions[mapname],
+				prometheus.CounterValue,
+				float64(v),
+				fmt.Sprintf("%05d", k),
+			)
+		}
+	}
+}
