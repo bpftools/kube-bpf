@@ -42,7 +42,7 @@ func (o *Operator) runInformers(stopCh <-chan struct{}, wg *sync.WaitGroup) {
 	for _, v := range o.Controllers {
 		wg.Add(1)
 		// run only one instance of for each controller for now
-		// TODO(fntlnz): make this parametric?
+		// todos > make this parametric?
 		go v.Run(1, stopCh, wg)
 	}
 }

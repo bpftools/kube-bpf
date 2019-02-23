@@ -6,7 +6,6 @@ import (
 	"time"
 
 	"github.com/bpftools/bpf-operator/apis/v1alpha1"
-	bpflib "github.com/iovisor/gobpf/elf"
 	"go.uber.org/zap"
 	validator "gopkg.in/go-playground/validator.v9"
 	v1 "k8s.io/api/core/v1"
@@ -98,32 +97,8 @@ func (s *BPF) syncToStdout(keysnap interface{}) error {
 	if exists {
 		bp := obj.(*v1alpha1.BPF)
 
-		// fixme(us): schedule a pod that executes this BPF
-		// this is not the right place, just for testing purposes
-		m := bpflib.NewModule("example/dummy.o")
-		if m == nil {
-			return fmt.Errorf("exist: module error")
-		}
-
-		if err := m.Load(nil); err != nil {
-			fmt.Printf("exist: load error: %v\n", err)
-			return err
-		}
-
-		// err = m.EnableKprobes(128)
-		// if err != nil {
-		// 	fmt.Printf("exist: kprobes error: %v\n", err)
-		// 	return err
-		// }
-
-		err = m.EnableTracepoint("tracepoint/raw_syscalls/sys_enter")
-		if err != nil {
-			fmt.Printf("exist: tracepoint error: %v\n", err)
-			return err
-		}
-
-		fmt.Printf("exist: %s\n", string(m.Log()))
-		fmt.Printf("exist: %v\n", bp)
+		// fixme > schedule a pod that executes this BPF
+		// notes > this is not the right place, just for testing purposes
 
 		return nil
 	}

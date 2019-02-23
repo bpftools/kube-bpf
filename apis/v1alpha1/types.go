@@ -74,5 +74,5 @@ type ProgramSource struct {
 	// +optional
 	SecretKeyRef *corev1.SecretKeySelector `json:"secretKeyRef,omitempty"`
 
-	// TODO(us): VolumeKeyRef
+	// todos > VolumeKeyRef
 }
