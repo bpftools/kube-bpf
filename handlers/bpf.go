@@ -2,7 +2,7 @@ package handlers
 
 import (
 	"github.com/bpftools/bpf-operator/apis/v1alpha1"
-	meta_v1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime"
 	"k8s.io/client-go/dynamic"
 	"k8s.io/client-go/tools/cache"
@@ -12,7 +12,7 @@ import (
 func NewBPFSharedInformer(bpfClient dynamic.ResourceInterface, queue workqueue.RateLimitingInterface) cache.SharedInformer {
 	si := cache.NewSharedInformer(
 		&cache.ListWatch{
-			ListFunc: func(options meta_v1.ListOptions) (runtime.Object, error) {
+			ListFunc: func(options metav1.ListOptions) (runtime.Object, error) {
 				res, err := bpfClient.List(options)
 				if err != nil {
 					return nil, err
