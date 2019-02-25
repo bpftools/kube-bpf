@@ -8,7 +8,7 @@ import (
 	"sync"
 	"syscall"
 
-	operator "github.com/bpftools/bpf-operator"
+	operator "github.com/leodido/bpf-operator"
 )
 
 var (
@@ -32,7 +32,7 @@ func run() error {
 	wg := &sync.WaitGroup{} // Goroutines can add themselves to this to be waited on
 
 	options.Labels = map[string]string{
-		"operator": "idpe-operator",
+		"operator": "bpf-operator",
 		"version":  VERSION,
 	}
 
