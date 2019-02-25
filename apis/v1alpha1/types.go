@@ -56,10 +56,8 @@ func (l *BPFList) DeepCopyObject() runtime.Object {
 }
 
 type Program struct {
-	// String value for program
-	// Defaults to ""
-	// +optional
-	Value string `json:"value,omitempty"`
+	// todos > Value
+
 	// Source for the program value. Cannot be used if value is not empty.
 	// +optional
 	ValueFrom *ProgramSource `json:"valueFrom,omitempty"`
@@ -70,9 +68,7 @@ type ProgramSource struct {
 	// Selects a key of a ConfigMap in the BPF's namespace
 	// +optional
 	ConfigMapKeyRef *corev1.ConfigMapKeySelector `json:"configMapKeyRef,omitempty"`
-	// Selects a key of a secret in the BPF's namespace
-	// +optional
-	SecretKeyRef *corev1.SecretKeySelector `json:"secretKeyRef,omitempty"`
 
+	// todos > SecretKeyRef *corev1.SecretKeySelector `json:"secretKeyRef,omitempty"`
 	// todos > VolumeKeyRef
 }

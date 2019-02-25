@@ -1,0 +1,14 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: runbpf
+  namespace: bpf
+  labels:
+    app: runbpf
+spec:
+  ports:
+  - port: 9387
+    name: metrics
+  clusterIP: None
+  selector:
+    app: runbpf

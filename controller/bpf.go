@@ -5,14 +5,18 @@ import (
 	"sync"
 	"time"
 
-	"github.com/bpftools/bpf-operator/apis/v1alpha1"
+	"github.com/leodido/bpf-operator/apis/v1alpha1"
+	"github.com/leodido/bpf-operator/something"
 	"go.uber.org/zap"
 	validator "gopkg.in/go-playground/validator.v9"
 	v1 "k8s.io/api/core/v1"
+	"k8s.io/apimachinery/pkg/api/errors"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	utilruntime "k8s.io/apimachinery/pkg/util/runtime"
 	"k8s.io/apimachinery/pkg/util/wait"
-	corev1 "k8s.io/client-go/kubernetes/typed/core/v1"
+	"k8s.io/client-go/kubernetes"
+	tappsv1 "k8s.io/client-go/kubernetes/typed/apps/v1"
+	tcorev1 "k8s.io/client-go/kubernetes/typed/core/v1"
 	"k8s.io/client-go/tools/cache"
 	"k8s.io/client-go/util/workqueue"
 )
@@ -20,20 +24,22 @@ import (
 type BPF struct {
 	informer     cache.SharedInformer
 	workqueue    workqueue.RateLimitingInterface
+	corev1Client tcorev1.CoreV1Interface
+	appsv1Client tappsv1.AppsV1Interface
 	logger       *zap.Logger
-	corev1Client corev1.CoreV1Interface
 	validator    *validator.Validate
 }
 
 func NewBPF(
 	i cache.SharedInformer,
 	wq workqueue.RateLimitingInterface,
-	corev1Client corev1.CoreV1Interface) *BPF {
+	kc *kubernetes.Clientset) *BPF {
 	return &BPF{
 		informer:     i,
 		workqueue:    wq,
+		corev1Client: kc.CoreV1(),
+		appsv1Client: kc.AppsV1(),
 		logger:       zap.NewNop(),
-		corev1Client: corev1Client,
 		validator:    validator.New(),
 	}
 }
@@ -96,9 +102,17 @@ func (s *BPF) syncToStdout(keysnap interface{}) error {
 
 	if exists {
 		bp := obj.(*v1alpha1.BPF)
-
-		// fixme > schedule a pod that executes this BPF
-		// notes > this is not the right place, just for testing purposes
+		st, err := something.New(bp, s.appsv1Client)
+		if err != nil {
+			return err
+		}
+		_, err = st.Create()
+		if err != nil {
+			if errors.IsAlreadyExists(err) {
+				return nil
+			}
+			return err
+		}
 
 		return nil
 	}
