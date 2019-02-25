@@ -3,6 +3,7 @@ package mapcollector
 import (
 	"fmt"
 	"log"
+	"os"
 	"unsafe"
 
 	"github.com/leodido/bpf-operator/loader"
@@ -22,7 +23,7 @@ type MapCollector struct {
 }
 
 func (c *MapCollector) Setup() error {
-	str, err := loader.NewLoader("example/dummy.o")
+	str, err := loader.NewLoader(c.path)
 	if err != nil {
 		return err
 	}
@@ -32,13 +33,17 @@ func (c *MapCollector) Setup() error {
 }
 
 func (c *MapCollector) Describe(ch chan<- *prometheus.Desc) {
+	labels := []string{
+		"key",
+		"node",
+	}
 	// Handling only type 1 for now // BPF_MAP_TYPE_HASH
 	for _, mapname := range c.str.MapsMeta()[1] {
-		log.Printf("Map: %q.\n", mapname)
+		log.Printf("Map: %q.\n", mapname) // todos > log with zap (injecting it?)
 		desc := prometheus.NewDesc(
 			prometheus.BuildFQName("test", "", mapname),
 			fmt.Sprintf("Data coming from %s BPF map", mapname),
-			[]string{"key"},
+			labels,
 			nil,
 		)
 		c.descriptions[mapname] = desc
@@ -47,6 +52,10 @@ func (c *MapCollector) Describe(ch chan<- *prometheus.Desc) {
 }
 
 func (c *MapCollector) Collect(ch chan<- prometheus.Metric) {
+	nodeName := os.Getenv("NODENAME")
+	if nodeName == "" {
+		nodeName = "unknown"
+	}
 	module := c.str.Module()
 	// Handling only type 1 for now // BPF_MAP_TYPE_HASH
 	for _, mapname := range c.str.MapsMeta()[1] {
@@ -68,6 +77,7 @@ func (c *MapCollector) Collect(ch chan<- prometheus.Metric) {
 				prometheus.CounterValue,
 				float64(v),
 				fmt.Sprintf("%05d", k),
+				nodeName,
 			)
 		}
 	}
