@@ -43,6 +43,7 @@ func (i *BPFClient) DeleteCollection(deleteOptions *metav1.DeleteOptions, listOp
 }
 
 func (i *BPFClient) Create(obj *unstructured.Unstructured, subresources ...string) (*unstructured.Unstructured, error) {
+	// todos > create daemonset here?
 	panic("not implemented")
 }
 

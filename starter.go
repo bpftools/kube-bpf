@@ -5,9 +5,9 @@ import (
 	"sync"
 	"time"
 
-	"github.com/bpftools/bpf-operator/apis/v1alpha1"
-	"github.com/bpftools/bpf-operator/controller"
-	"github.com/bpftools/bpf-operator/handlers"
+	"github.com/leodido/bpf-operator/apis/v1alpha1"
+	"github.com/leodido/bpf-operator/controller"
+	"github.com/leodido/bpf-operator/handlers"
 	"go.uber.org/zap"
 	"golang.org/x/time/rate"
 	"k8s.io/apiextensions-apiserver/pkg/client/clientset/clientset"
@@ -89,7 +89,7 @@ func New(options Config, logger *zap.Logger) *Operator {
 	bpfWq := workqueue.NewNamedRateLimitingQueue(exponentialRateLimiter(), "BPF")
 	bpfClient := v1alpha1.NewBPFClient(dynamicClient, restclient)
 	bpfInformer := handlers.NewBPFSharedInformer(bpfClient, bpfWq)
-	bpfController := controller.NewBPF(bpfInformer, bpfWq, kubeClient.CoreV1())
+	bpfController := controller.NewBPF(bpfInformer, bpfWq, kubeClient)
 	bpfController.WithLogger(logger)
 
 	// Controllers registration
