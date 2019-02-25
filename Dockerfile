@@ -27,8 +27,7 @@ RUN apk add --update libc6-compat
 # ENTRYPOINT ["/bin/bpfrun"]
 
 # temporary
-ADD . /go/src/github.com/leodido/bpf-operator
-WORKDIR /go/src/github.com/leodido/bpf-operator
-ENTRYPOINT ["./output/runner"]
+ADD output/runner /runner
+ENTRYPOINT ["/runner"]
 
 # run me => docker run -it --cap-add SYS_ADMIN -v /sys:/sys -p 9387:9387 leodido/runbpf
