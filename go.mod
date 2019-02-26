@@ -3,6 +3,7 @@ module github.com/leodido/bpf-operator
 require (
 	github.com/BurntSushi/toml v0.3.1 // indirect
 	github.com/davecgh/go-spew v1.1.1
+	github.com/fatih/structs v1.1.0 // indirect
 	github.com/ghodss/yaml v1.0.0 // indirect
 	github.com/go-playground/locales v0.11.2 // indirect
 	github.com/go-playground/universal-translator v0.16.0 // indirect
@@ -21,11 +22,15 @@ require (
 	github.com/kr/pretty v0.1.0 // indirect
 	github.com/modern-go/concurrent v0.0.0-20180306012644-bacd9c7ef1dd // indirect
 	github.com/modern-go/reflect2 v0.0.0-20180701023420-4b7aa43c6742 // indirect
+	github.com/mohae/deepcopy v0.0.0-20170929034955-c48cc78d4826 // indirect
 	github.com/peterbourgon/diskv v2.0.1+incompatible // indirect
 	github.com/pkg/errors v0.8.0 // indirect
 	github.com/prometheus/client_golang v0.9.2
+	github.com/safchain/insanelock v0.0.0-20180509135444-33bca4586648 // indirect
+	github.com/skydive-project/skydive v0.21.0
 	github.com/spf13/cobra v0.0.3
 	github.com/spf13/viper v1.3.1
+	github.com/vishvananda/netns v0.0.0-20180720170159-13995c7128cc // indirect
 	go.uber.org/atomic v1.3.2 // indirect
 	go.uber.org/multierr v1.1.0 // indirect
 	go.uber.org/zap v1.9.1
