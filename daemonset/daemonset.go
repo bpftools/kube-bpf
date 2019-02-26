@@ -1,4 +1,4 @@
-package something
+package daemonset
 
 import (
 	"fmt"
@@ -14,12 +14,12 @@ import (
 
 const bpfProgramAbsolutePath = "/bpf"
 
-type Something struct {
+type DaemonSet struct {
 	resource *resources.BPF
 	client   tappsv1.DaemonSetInterface
 }
 
-func New(res *resources.BPF, appsv1Client tappsv1.AppsV1Interface) (*Something, error) {
+func New(res *resources.BPF, appsv1Client tappsv1.AppsV1Interface) (*DaemonSet, error) {
 	if appsv1Client == nil {
 		return nil, fmt.Errorf("missing AppsV1 client")
 	}
@@ -44,14 +44,14 @@ func New(res *resources.BPF, appsv1Client tappsv1.AppsV1Interface) (*Something, 
 		res.Namespace = "default"
 	}
 
-	s := &Something{
+	s := &DaemonSet{
 		resource: res,
 		client:   appsv1Client.DaemonSets(res.Namespace),
 	}
 	return s, nil
 }
 
-func (s *Something) Create() (*appsv1.DaemonSet, error) {
+func (s *DaemonSet) Create() (*appsv1.DaemonSet, error) {
 	if s.resource.ObjectMeta.Labels == nil {
 		s.resource.ObjectMeta.Labels = map[string]string{}
 	}
@@ -81,6 +81,8 @@ func (s *Something) Create() (*appsv1.DaemonSet, error) {
 					},
 				},
 				Spec: corev1.PodSpec{
+					HostNetwork: true, // --net="host" // todos > this means two BPF resources cannot run together (since the port will be occupied)
+					HostPID:     true, // --pid="host"
 					// NodeSelector: map[string]string{}, // todos > node filtering/selection?
 					Containers: []corev1.Container{
 						{

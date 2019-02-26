@@ -6,7 +6,7 @@ import (
 	"time"
 
 	"github.com/leodido/bpf-operator/apis/v1alpha1"
-	"github.com/leodido/bpf-operator/something"
+	"github.com/leodido/bpf-operator/daemonset"
 	"go.uber.org/zap"
 	validator "gopkg.in/go-playground/validator.v9"
 	v1 "k8s.io/api/core/v1"
@@ -102,11 +102,11 @@ func (s *BPF) syncToStdout(keysnap interface{}) error {
 
 	if exists {
 		bp := obj.(*v1alpha1.BPF)
-		st, err := something.New(bp, s.appsv1Client)
+		ds, err := daemonset.New(bp, s.appsv1Client)
 		if err != nil {
 			return err
 		}
-		_, err = st.Create()
+		_, err = ds.Create()
 		if err != nil {
 			if errors.IsAlreadyExists(err) {
 				return nil
