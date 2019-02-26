@@ -2,9 +2,9 @@ package main
 
 import (
 	"context"
-	// "encoding/json"
+	"encoding/json"
 	"fmt"
-	// "github.com/davecgh/go-spew/spew"
+
 	"github.com/spf13/viper"
 	"net/http"
 	"os"
@@ -29,45 +29,45 @@ var root = &cobra.Command{
 	Short: "",
 	Long:  ``,
 	Args:  cobra.MinimumNArgs(1),
-	// PreRunE: func(cmd *cobra.Command, args []string) error {
-
-	// },
-	RunE: func(cmd *cobra.Command, args []string) error {
-		// // Setup logging
-		// logConf := []byte(`{
-		// 	"level": "debug",
-		// 	"encoding": "console",
-		// 	"outputPaths": ["stdout"],
-		// 	"errorOutputPaths": ["stderr"],
-		// 	"initialFields": {},
-		// 	"encoderConfig": {
-		// 	  "messageKey": "message",
-		// 	  "levelKey": "level",
-		// 	  "levelEncoder": "lowercase"
-		// 	}
-		// }`)
-		// var cfg zap.Config
-		// if err := json.Unmarshal(logConf, &cfg); err != nil {
-		// 	return err
-		// }
-		// var err error
-		// logg, err = cfg.Build()
-		// if err != nil {
-		// 	return err
-		// }
-		// spew.Dump(logg)
-
-		logg = zap.NewExample()
-
-		// Setup a collector for input BPF program
-		coll = mapc.New(args[0])
-		if err := coll.Setup(); err != nil {
+	PreRunE: func(cmd *cobra.Command, args []string) error {
+		// Setup logging
+		logConf := []byte(`{
+			"level": "debug",
+			"encoding": "console",
+			"outputPaths": ["stdout"],
+			"errorOutputPaths": ["stderr"],
+			"initialFields": {},
+			"encoderConfig": {
+			  "messageKey": "message",
+			  "levelKey": "level",
+			  "levelEncoder": "lowercase"
+			}
+		}`)
+		var cfg zap.Config
+		if err := json.Unmarshal(logConf, &cfg); err != nil {
+			return err
+		}
+		var err error
+		logg, err = cfg.Build()
+		if err != nil {
 			return err
 		}
 
+		// Setup a collector for input BPF program
+		coll = mapc.New(args[0], logg)
+		if err := coll.Setup(); err != nil {
+			return err
+		}
+		return nil
+	},
+	RunE: func(cmd *cobra.Command, args []string) error {
 		ctx := context.Background()
 
 		serve(ctx)
+
+		if err := logg.Sync(); err != nil {
+			return fmt.Errorf("error syncing logs: %v", err)
+		}
 
 		<-ctx.Done()
 		return nil
@@ -78,16 +78,11 @@ func main() {
 	root.PersistentFlags().StringVarP(&addr, "address", "a", ":9387", "address of the server")
 	viper.BindPFlags(root.PersistentFlags())
 
-	// root.Execute()
 	var exitCode int
 	if err := root.Execute(); err != nil {
 		exitCode = 1
-		logg.Fatal("Command returned error", zap.Error(err))
 	}
-	if err := logg.Sync(); err != nil {
-		exitCode = 1
-		fmt.Fprintf(os.Stderr, "Error syncing logs: %v\n", err)
-	}
+
 	time.Sleep(tout)
 	os.Exit(exitCode)
 }

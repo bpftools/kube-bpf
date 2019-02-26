@@ -2,21 +2,23 @@ package mapcollector
 
 import (
 	"fmt"
-	"log"
 	"os"
 	"unsafe"
 
 	"github.com/leodido/bpf-operator/loader"
 	"github.com/prometheus/client_golang/prometheus"
+	"go.uber.org/zap"
 )
 
-func New(path string) *MapCollector {
+func New(path string, logger *zap.Logger) *MapCollector {
 	return &MapCollector{
+		l:    logger,
 		path: path,
 	}
 }
 
 type MapCollector struct {
+	l            *zap.Logger
 	path         string
 	str          *loader.Loader
 	descriptions map[string]*prometheus.Desc
@@ -39,10 +41,11 @@ func (c *MapCollector) Describe(ch chan<- *prometheus.Desc) {
 	}
 	// Handling only type 1 for now // BPF_MAP_TYPE_HASH
 	for _, mapname := range c.str.MapsMeta()[1] {
-		log.Printf("Map: %q.\n", mapname) // todos > log with zap (injecting it?)
+		c.l.Info("New map found", zap.String("name", mapname), zap.String("type", "hash"))
+
 		desc := prometheus.NewDesc(
 			prometheus.BuildFQName("test", "", mapname),
-			fmt.Sprintf("Data coming from %s BPF map", mapname),
+			mapname,
 			labels,
 			nil,
 		)
@@ -72,11 +75,13 @@ func (c *MapCollector) Collect(ch chan<- prometheus.Metric) {
 			}
 			k = n
 
+			key := fmt.Sprintf("%05d", k) // todos > read number of digits of map keys (from map definition) and pad them accordingly
+			c.l.Debug("New map value", zap.String("map", mapname), zap.String("key", key), zap.Uint64("val", v), zap.String("node", nodeName))
 			ch <- prometheus.MustNewConstMetric(
 				c.descriptions[mapname],
 				prometheus.CounterValue,
 				float64(v),
-				fmt.Sprintf("%05d", k),
+				key,
 				nodeName,
 			)
 		}
