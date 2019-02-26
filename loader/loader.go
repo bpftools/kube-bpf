@@ -1,10 +1,11 @@
 package loader
 
 import (
-	"reflect"
-
 	"github.com/davecgh/go-spew/spew"
 	elf "github.com/iovisor/gobpf/elf"
+	"github.com/skydive-project/skydive/common"
+	"reflect"
+	"syscall"
 )
 
 // getMapAttribute implements an ugly hack to grab map definition attributes.
@@ -21,14 +22,14 @@ type Loader struct {
 }
 
 func NewLoader(filepath string) (*Loader, error) {
-	elf := elf.NewModule(filepath)
-	err := elf.Load(nil)
+	m := elf.NewModule(filepath)
+	err := m.Load(nil)
 	if err != nil {
 		return nil, err
 	}
 
 	mapsMeta := make(map[uint64][]string, 0)
-	for m := range elf.IterMaps() {
+	for m := range m.IterMaps() {
 		t := getMapAttribute(m, "_type")
 		if _, ok := mapsMeta[t]; !ok {
 			mapsMeta[t] = make([]string, 0)
@@ -36,16 +37,28 @@ func NewLoader(filepath string) (*Loader, error) {
 		mapsMeta[t] = append(mapsMeta[t], m.Name)
 	}
 
-	for t := range elf.IterTracepointProgram() {
-		err := elf.EnableTracepoint(t.Name)
+	for t := range m.IterTracepointProgram() {
+		err := m.EnableTracepoint(t.Name)
 		if err != nil {
-			spew.Dump("exist: tracepoint error: %v\n", err)
+			spew.Dump("exist: tracepoint error: %v\n", err) // todos > log with adequate logger
+			return nil, err
+		}
+	}
+
+	for s := range m.IterSocketFilter() {
+		// todos > how to chose the iface?
+		rs, err := common.NewRawSocketInNs("/proc/1/ns/net", "wlp4s0", syscall.ETH_P_ALL)
+		if err != nil {
+			return nil, err
+		}
+		fd := rs.GetFd()
+		if err := elf.AttachSocketFilter(s, fd); err != nil {
 			return nil, err
 		}
 	}
 
 	return &Loader{
-		module:   elf,
+		module:   m,
 		mapsMeta: mapsMeta,
 	}, nil
 }
