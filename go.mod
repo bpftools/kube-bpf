@@ -51,5 +51,3 @@ require (
 replace github.com/Sirupsen/logrus => github.com/sirupsen/logrus v1.2.0
 
 replace github.com/docker/docker v1.13.1 => github.com/docker/docker v0.7.3-0.20190108045446-77df18c24acf
-
-replace github.com/influxdata/platform => /dev/null
