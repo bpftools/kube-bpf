@@ -17,7 +17,7 @@ LDFLAGS := -ldflags "" # -ldflags "-extldflags '-static'"
 RUNNER ?= output/runner
 
 $(RUNNER):
-	go build ${LDFLAGS} -o $@ ./cmd/runner
+	GO11MODULE=on go build ${LDFLAGS} -o $@ ./cmd/runner
 
 $(IMAGE_BUILD_NAME):
 	docker build \
