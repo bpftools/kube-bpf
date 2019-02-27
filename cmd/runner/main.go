@@ -10,7 +10,7 @@ import (
 	"os"
 	"time"
 
-	mapc "github.com/leodido/bpf-operator/mapcollector"
+	mapc "github.com/bpftools/kube-bpf/mapcollector"
 	"github.com/prometheus/client_golang/prometheus"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
 	"github.com/spf13/cobra"

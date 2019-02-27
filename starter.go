@@ -1,13 +1,13 @@
-package bpfoperator
+package kubebpf
 
 import (
 	"log"
 	"sync"
 	"time"
 
-	"github.com/leodido/bpf-operator/apis/v1alpha1"
-	"github.com/leodido/bpf-operator/controller"
-	"github.com/leodido/bpf-operator/handlers"
+	"github.com/bpftools/kube-bpf/apis/v1alpha1"
+	"github.com/bpftools/kube-bpf/controller"
+	"github.com/bpftools/kube-bpf/handlers"
 	"go.uber.org/zap"
 	"golang.org/x/time/rate"
 	"k8s.io/apiextensions-apiserver/pkg/client/clientset/clientset"

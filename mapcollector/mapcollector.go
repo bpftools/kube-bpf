@@ -5,7 +5,7 @@ import (
 	"os"
 	"unsafe"
 
-	"github.com/leodido/bpf-operator/loader"
+	"github.com/bpftools/kube-bpf/loader"
 	"github.com/prometheus/client_golang/prometheus"
 	"go.uber.org/zap"
 )

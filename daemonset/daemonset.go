@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"path"
 
-	resources "github.com/leodido/bpf-operator/apis/v1alpha1"
+	resources "github.com/bpftools/kube-bpf/apis/v1alpha1"
 	appsv1 "k8s.io/api/apps/v1"
 	corev1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"

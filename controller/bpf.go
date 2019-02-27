@@ -5,8 +5,8 @@ import (
 	"sync"
 	"time"
 
-	"github.com/leodido/bpf-operator/apis/v1alpha1"
-	"github.com/leodido/bpf-operator/daemonset"
+	"github.com/bpftools/kube-bpf/apis/v1alpha1"
+	"github.com/bpftools/kube-bpf/daemonset"
 	"go.uber.org/zap"
 	validator "gopkg.in/go-playground/validator.v9"
 	v1 "k8s.io/api/core/v1"

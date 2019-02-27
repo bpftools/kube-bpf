@@ -8,7 +8,7 @@ import (
 	"sync"
 	"syscall"
 
-	operator "github.com/leodido/bpf-operator"
+	operator "github.com/bpftools/kube-bpf"
 )
 
 var (

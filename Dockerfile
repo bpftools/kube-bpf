@@ -12,8 +12,8 @@
 # RUN ln -s /usr/include/llvm5/llvm /usr/include/llvm
 # RUN ln -s /usr/include/llvm5/llvm-c /usr/include/llvm-c
 
-# ADD . /go/src/github.com/leodido/bpf-operator
-# WORKDIR /go/src/github.com/leodido/bpf-operator
+# ADD . /go/src/github.com/bpftools/kube-bpf
+# WORKDIR /go/src/github.com/bpftools/kube-bpf
 
 # RUN make build
 
@@ -22,7 +22,7 @@ FROM alpine:3.8
 RUN apk add --update libc6-compat
 
 # RUN mkdir /lib64 && ln -s /lib/libc.musl-x86_64.so.1 /lib64/ld-linux-x86-64.so.2
-# COPY --from=gobuilder /go/src/github.com/leodido/bpf-operator/output/runner /bin/bpfrun
+# COPY --from=gobuilder /go/src/github.com/bpftools/kube-bpf/output/runner /bin/bpfrun
 
 # ENTRYPOINT ["/bin/bpfrun"]
 

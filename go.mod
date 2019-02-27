@@ -1,4 +1,4 @@
-module github.com/leodido/bpf-operator
+module github.com/bpftools/kube-bpf
 
 require (
 	github.com/BurntSushi/toml v0.3.1 // indirect
