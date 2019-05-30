@@ -17,3 +17,5 @@ kubectl create configmap --from-file path/to/superpowers.o superpowersname -n na
 ```
 
 Or look at `examples/build.sh` for now.
+
+# Testing automation
