@@ -15,9 +15,13 @@ IMAGE_BUILD_LATEST := $(IMAGE_BUILD_NAME):latest
 LDFLAGS := -ldflags "" # -ldflags "-extldflags '-static'"
 
 RUNNER ?= output/runner
+OPERATOR ?= output/operator
 
 $(RUNNER):
 	GO11MODULE=on go build ${LDFLAGS} -o $@ ./cmd/runner
+
+$(OPERATOR):
+	GO11MODULE=on go build ${LDFLAGS} -o $@ ./cmd/operator
 
 $(IMAGE_BUILD_NAME):
 	docker build \
@@ -29,11 +33,11 @@ $(IMAGE_BUILD_NAME):
 	docker tag $(IMAGE_BUILD_COMMIT) $(IMAGE_BUILD_LATEST) 
 
 .PHONY: build
-build: clean ${RUNNER}
+build: clean ${RUNNER} ${OPERATOR}
 
 .PHONY: clean
 clean:
-	rm -Rf ${RUNNER}
+	rm -Rf ${RUNNER} ${OPERATOR}
 
 .PHONY: image
 image: $(IMAGE_BUILD_NAME)

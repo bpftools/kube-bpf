@@ -1,9 +1,11 @@
 package loader
 
 import (
+	"fmt"
 	"github.com/davecgh/go-spew/spew"
 	elf "github.com/iovisor/gobpf/elf"
 	"github.com/skydive-project/skydive/common"
+	"github.com/vishvananda/netlink"
 	"reflect"
 	"syscall"
 )
@@ -37,6 +39,7 @@ func NewLoader(filepath string) (*Loader, error) {
 		mapsMeta[t] = append(mapsMeta[t], m.Name)
 	}
 
+	// program type: BPF_PROG_TYPE_TRACEPOINT
 	for t := range m.IterTracepointProgram() {
 		err := m.EnableTracepoint(t.Name)
 		if err != nil {
@@ -45,15 +48,22 @@ func NewLoader(filepath string) (*Loader, error) {
 		}
 	}
 
+	// program type: BPF_PROG_TYPE_SOCKET_FILTER
 	for s := range m.IterSocketFilter() {
-		// todos > how to chose the iface?
-		rs, err := common.NewRawSocketInNs("/proc/1/ns/net", "wlp4s0", syscall.ETH_P_ALL)
+		// todos > it currently attaches to all the interfaces, maybe make them selectable?
+		links, err := netlink.LinkList()
 		if err != nil {
 			return nil, err
 		}
-		fd := rs.GetFd()
-		if err := elf.AttachSocketFilter(s, fd); err != nil {
-			return nil, err
+		for _, link := range links {
+			rs, err := common.NewRawSocketInNs("/proc/1/ns/net", link.Attrs().Name, syscall.ETH_P_ALL)
+			if err != nil {
+				return nil, err
+			}
+			fd := rs.GetFd()
+			if err := elf.AttachSocketFilter(s, fd); err != nil {
+				return nil, err
+			}
 		}
 	}
 
