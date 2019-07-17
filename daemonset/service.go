@@ -48,6 +48,7 @@ func (s *Service) Create() (*corev1.Service, error) {
 		Spec: corev1.ServiceSpec{
 			Ports: []corev1.ServicePort{
 				corev1.ServicePort{
+					Name: "bpf",
 					Port: 9387,
 				},
 			},
