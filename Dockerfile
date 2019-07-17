@@ -30,4 +30,4 @@ RUN apk add --update libc6-compat
 ADD output/runner /runner
 ENTRYPOINT ["/runner"]
 
-# run me => docker run -it --cap-add SYS_ADMIN -v /sys:/sys -p 9387:9387 leodido/runbpf
+# run me => docker run -it --cap-add SYS_ADMIN -v /sys:/sys -p 9387:9387 bpftools/runbpf

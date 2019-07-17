@@ -114,6 +114,18 @@ func (s *BPF) syncToStdout(keysnap interface{}) error {
 			return err
 		}
 
+		svc, err := daemonset.NewService(bp, s.corev1Client)
+		if err != nil {
+			return err
+		}
+		_, err = svc.Create()
+		if err != nil {
+			if errors.IsAlreadyExists(err) {
+				return nil
+			}
+			return err
+		}
+
 		return nil
 	}
 

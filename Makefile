@@ -4,7 +4,7 @@ COMMIT_NUM := $(shell git rev-parse HEAD 2> /dev/null || true)
 GIT_COMMIT := $(if $(shell git status --porcelain --untracked-files=no),${COMMIT_NUM}-dirty,${COMMIT_NUM})
 GIT_BRANCH := $(shell echo $(shell git rev-parse --abbrev-ref HEAD 2>/dev/null) | sed -e "s/[^[:alnum:]]/-/g")
 
-IMAGE_BUILD_NAME ?= leodido/runbpf
+IMAGE_BUILD_NAME ?= bpftools/runbpf
 IMAGE_BUILD_FLAG ?= --no-cache
 
 IMAGE_BUILD_BRANCH := $(IMAGE_BUILD_NAME):$(GIT_BRANCH)
