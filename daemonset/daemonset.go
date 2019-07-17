@@ -152,3 +152,15 @@ func (s *DaemonSet) Create() (*appsv1.DaemonSet, error) {
 
 	return s.client.Create(daemonSet)
 }
+
+func Delete(res *resources.BPF, appsv1Client tappsv1.AppsV1Interface) error {
+
+	if appsv1Client == nil {
+		return fmt.Errorf("missing AppsV1 client")
+	}
+	if res == nil {
+		return fmt.Errorf("missing BPF resource")
+	}
+
+	return appsv1Client.DaemonSets(res.Namespace).Delete(res.GetName(), nil)
+}

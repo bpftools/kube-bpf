@@ -32,12 +32,12 @@ func NewService(res *resources.BPF, corev1Client tcorev1.CoreV1Interface) (*Serv
 }
 
 func (s *Service) Create() (*corev1.Service, error) {
+	appName := fmt.Sprintf("bpf-%s", s.resource.Name)
 	if s.resource.ObjectMeta.Labels == nil {
 		s.resource.ObjectMeta.Labels = map[string]string{}
 	}
+	s.resource.ObjectMeta.Labels["app"] = appName
 	s.resource.ObjectMeta.Labels["bpf.sh/bpf-origin-uid"] = string(s.resource.ObjectMeta.UID)
-
-	appName := fmt.Sprintf("bpf-%s", s.resource.Name)
 	service := &corev1.Service{
 		ObjectMeta: metav1.ObjectMeta{
 			Name:        fmt.Sprintf("bpf-%s", s.resource.Name),
@@ -58,6 +58,5 @@ func (s *Service) Create() (*corev1.Service, error) {
 			Type: "ClusterIP",
 		},
 	}
-
 	return s.client.Create(service)
 }

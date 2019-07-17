@@ -129,9 +129,12 @@ func (s *BPF) syncToStdout(keysnap interface{}) error {
 		return nil
 	}
 
-	bp := keysnap.(*v1alpha1.BPF)
+	//bp := keysnap.(*v1alpha1.BPF)
 
-	fmt.Printf("does not exist: %v", bp)
+	//s.logger.Info("BPF resource does not exist, removing stuff", zap.String("bpf", bp.GetName()))
+	//if err := daemonset.Delete(bp, s.appsv1Client); err != nil {
+	//s.logger.Error("daemonset removal failed", zap.Error(err), zap.String("bpf", bp.GetName()))
+	//}
 
 	return nil
 }
