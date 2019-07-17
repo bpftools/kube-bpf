@@ -57,13 +57,14 @@ func (s *DaemonSet) Create() (*appsv1.DaemonSet, error) {
 	}
 	s.resource.ObjectMeta.Labels["bpf.sh/bpf-origin-uid"] = string(s.resource.ObjectMeta.UID)
 
+	appName := fmt.Sprintf("bpf-%s", s.resource.Name)
 	daemonSet := &appsv1.DaemonSet{
 		TypeMeta: metav1.TypeMeta{
 			Kind:       "DaemonSet",
 			APIVersion: "apps/v1",
 		},
 		ObjectMeta: metav1.ObjectMeta{
-			Name:        fmt.Sprintf("bpf-%s", s.resource.Name),
+			Name:        appName,
 			Namespace:   s.resource.Namespace,
 			Labels:      s.resource.ObjectMeta.Labels,
 			Annotations: s.resource.ObjectMeta.Annotations,
@@ -71,13 +72,13 @@ func (s *DaemonSet) Create() (*appsv1.DaemonSet, error) {
 		Spec: appsv1.DaemonSetSpec{
 			Selector: &metav1.LabelSelector{
 				MatchLabels: map[string]string{
-					"app": "runbpf",
+					"app": appName,
 				},
 			},
 			Template: corev1.PodTemplateSpec{
 				ObjectMeta: metav1.ObjectMeta{
 					Labels: map[string]string{
-						"app": "runbpf",
+						"app": appName,
 					},
 				},
 				Spec: corev1.PodSpec{
@@ -86,8 +87,8 @@ func (s *DaemonSet) Create() (*appsv1.DaemonSet, error) {
 					// NodeSelector: map[string]string{}, // todos > node filtering/selection?
 					Containers: []corev1.Container{
 						{
-							Name:  "runbpf",
-							Image: "leodido/runbpf:latest",
+							Name:  appName,
+							Image: "bpftools/runbpf:latest",
 							Args: []string{
 								path.Join(bpfProgramAbsolutePath, s.resource.Spec.Program.ValueFrom.ConfigMapKeyRef.Key),
 							},
