@@ -1,7 +1,6 @@
 package loader
 
 import (
-	"fmt"
 	"github.com/davecgh/go-spew/spew"
 	elf "github.com/iovisor/gobpf/elf"
 	"github.com/skydive-project/skydive/common"

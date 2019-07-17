@@ -97,7 +97,7 @@ func (s *DaemonSet) Create() (*appsv1.DaemonSet, error) {
 									ContainerPort: 9387,
 								},
 							},
-							ImagePullPolicy: "IfNotPresent", // todos > use Always here?
+							ImagePullPolicy: "Always",
 							SecurityContext: &corev1.SecurityContext{
 								Privileged: pointer.BoolPtr(true),
 							},
