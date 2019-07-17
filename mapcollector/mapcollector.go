@@ -44,7 +44,7 @@ func (c *MapCollector) Describe(ch chan<- *prometheus.Desc) {
 		c.l.Info("New map found", zap.String("name", mapname), zap.String("type", "hash"))
 
 		desc := prometheus.NewDesc(
-			prometheus.BuildFQName("test", "", mapname),
+			prometheus.BuildFQName("bpf", "", mapname),
 			mapname,
 			labels,
 			nil,
