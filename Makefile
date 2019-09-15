@@ -17,32 +17,27 @@ LDFLAGS := -ldflags "" # -ldflags "-extldflags '-static'"
 RUNNER ?= output/runner
 OPERATOR ?= output/operator
 
+.PHONY: build
+build: clean ${RUNNER} ${OPERATOR}
+
+.PHONY: image
+image: $(IMAGE_BUILD_NAME)
+
+.PHONY: clean
+clean:
+	@rm -Rf ${RUNNER} ${OPERATOR}
+
 $(RUNNER):
 	GO11MODULE=on go build ${LDFLAGS} -o $@ ./cmd/runner
 
 $(OPERATOR):
 	GO11MODULE=on go build ${LDFLAGS} -o $@ ./cmd/operator
 
-$(IMAGE_BUILD_NAME):
+$(IMAGE_BUILD_NAME): $(RUNNER)
 	docker build \
 		$(IMAGE_BUILD_FLAG) \
 		-t $(IMAGE_BUILD_BRANCH) \
 		-f Dockerfile .
 	docker tag $(IMAGE_BUILD_BRANCH) $(IMAGE_BUILD_COMMIT)
 	# temporarily building latest here, too
-	docker tag $(IMAGE_BUILD_COMMIT) $(IMAGE_BUILD_LATEST) 
-
-.PHONY: build
-build: clean ${RUNNER} ${OPERATOR}
-
-.PHONY: clean
-clean:
-	rm -Rf ${RUNNER} ${OPERATOR}
-
-.PHONY: image
-image: $(IMAGE_BUILD_NAME)
-
-
-
-	
-	
+	docker tag $(IMAGE_BUILD_COMMIT) $(IMAGE_BUILD_LATEST)
