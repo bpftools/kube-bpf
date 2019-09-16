@@ -17,6 +17,9 @@
 #define offsetof(TYPE, MEMBER) ((size_t) & ((TYPE *)0)->MEMBER)
 #endif
 
+// map containing a pair of protocol number -> count
+// see the wikipedia article on protocol numbers
+// https://en.wikipedia.org/wiki/List_of_IP_protocol_numbers
 struct bpf_map_def SEC("maps/packets") countmap = {
     .type = BPF_MAP_TYPE_HASH,
     .key_size = sizeof(int),

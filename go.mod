@@ -29,6 +29,7 @@ require (
 	github.com/safchain/insanelock v0.0.0-20180509135444-33bca4586648 // indirect
 	github.com/skydive-project/skydive v0.21.0
 	github.com/spf13/cobra v0.0.3
+	github.com/spf13/pflag v1.0.3
 	github.com/spf13/viper v1.3.1
 	github.com/vishvananda/netlink v1.0.0
 	github.com/vishvananda/netns v0.0.0-20180720170159-13995c7128cc // indirect
