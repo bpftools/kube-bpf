@@ -4,8 +4,8 @@ COMMIT_NUM := $(shell git rev-parse HEAD 2> /dev/null || true)
 GIT_COMMIT := $(if $(shell git status --porcelain --untracked-files=no),${COMMIT_NUM}-dirty,${COMMIT_NUM})
 GIT_BRANCH := $(shell echo $(shell git rev-parse --abbrev-ref HEAD 2>/dev/null) | sed -e "s/[^[:alnum:]]/-/g")
 
-IMAGE_BUILD_NAME ?= bpftools/runbpf
-IMAGE_BUILD_FLAG ?= --no-cache
+IMAGE_BUILD_NAME := bpftools/runbpf
+IMAGE_BUILD_FLAG := --no-cache
 
 IMAGE_BUILD_BRANCH := ${IMAGE_BUILD_NAME}:${GIT_BRANCH}
 IMAGE_BUILD_COMMIT := ${IMAGE_BUILD_NAME}:${GIT_COMMIT}
@@ -42,13 +42,10 @@ examples: ${BPF_YAML_OUT}
 clean:
 	@rm -Rf ${GO_PROGRAMS}
 
+# temporarily building latest here, too
 $(IMAGE_BUILD_NAME): ${RUNNER}
-	docker build \
-		${IMAGE_BUILD_FLAG} \
-		-t ${IMAGE_BUILD_BRANCH} \
-		-f Dockerfile .
-	docker tag $({MAGE_BUILD_BRANCH} ${IMAGE_BUILD_COMMIT}
-	# temporarily building latest here, too
+	docker build ${IMAGE_BUILD_FLAG} -t ${IMAGE_BUILD_BRANCH} -f Dockerfile .
+	docker tag ${IMAGE_BUILD_BRANCH} ${IMAGE_BUILD_COMMIT}
 	docker tag ${IMAGE_BUILD_COMMIT} ${IMAGE_BUILD_LATEST}
 
 # (1): The Go program being built
@@ -75,8 +72,8 @@ $(3): $(1)
 $(4): ${GENYAML} $(3)
 ifeq ($(strip ${BPF_NAMESPACE}),)
 	@echo -e "------\n[YAML] $(3) => $(4)"
-	@${GENYAML} -r $(2) --ending-dashes >> $(4)
-	@kubectl create configmap --from-file $(3) $(2)-config -o yaml --dry-run >> $(4)
+	@${GENYAML} -r $(2) --ending-dashes -n "default" >> $(4)
+	@kubectl create configmap --from-file $(3) $(2)-config -o yaml -n "default" --dry-run >> $(4)
 else
 	@echo -e "------\n[YAML] $(3) => $(4)"
 	@${GENYAML} -r $(2) --ending-dashes -n ${BPF_NAMESPACE} >> $(4)

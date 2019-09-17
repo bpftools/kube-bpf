@@ -10,39 +10,39 @@ import (
 
 type data struct {
 	Namespace, Resource string
-	WithEndingDashes bool
+	WithEndingDashes    bool
 }
 
 func main() {
 	d := &data{}
 
-	pflag.StringVarP(&d.Namespace, "namespace", "n", "", "Namespace of the BPF resource (optional)")
+	pflag.StringVarP(&d.Namespace, "namespace", "n", "default", "Namespace of the BPF resource (optional)")
 	pflag.StringVarP(&d.Resource, "resource", "r", "", "Name of the BPF resource")
 	pflag.BoolVar(&d.WithEndingDashes, "ending-dashes", false, "Whether to append three dashes at the end or not")
 	pflag.Parse()
 
-	if(d.Resource == "") {
-    fmt.Fprintf(os.Stderr, "missing resource name\n")
-    os.Exit(1)
-  }
+	if d.Resource == "" {
+		fmt.Fprintf(os.Stderr, "missing resource name\n")
+		os.Exit(1)
+	}
 
-	const yaml = `{{if .Namespace}}---
+	const yaml = `---
 apiVersion: v1
 kind: Namespace
 metadata:
   name: {{.Namespace}}
-{{end}}---
+---
 apiVersion: bpf.sh/v1alpha1
 kind: BPF
 metadata:
-  name: {{.Resource}}-bpf{{if .Namespace}}
-  namespace: {{.Namespace}}{{end}}
+  name: {{.Resource}}-bpf
+  namespace: {{.Namespace}}
 spec:
   program:
     valueFrom:
       configMapKeyRef:
         name: {{.Resource}}-config
-		key: {{.Resource}}.o{{if .WithEndingDashes}}
+        key: {{.Resource}}.o{{if .WithEndingDashes}}
 ---
 {{end}}`
 
