@@ -38,6 +38,7 @@ func (s *Service) Create() (*corev1.Service, error) {
 	}
 	s.resource.ObjectMeta.Labels["app"] = appName
 	s.resource.ObjectMeta.Labels["bpf.sh/bpf-origin-uid"] = string(s.resource.ObjectMeta.UID)
+	s.resource.ObjectMeta.Annotations["prometheus.io/scrape"] = "true"
 	service := &corev1.Service{
 		ObjectMeta: metav1.ObjectMeta{
 			Name:        fmt.Sprintf("bpf-%s", s.resource.Name),
